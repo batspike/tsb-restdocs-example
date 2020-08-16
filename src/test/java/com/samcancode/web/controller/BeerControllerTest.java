@@ -37,7 +37,7 @@ import com.samcancode.web.model.BeerStyleEnum;
 
 @WebMvcTest(BeerController.class)
 @ComponentScan(basePackages = "com.samcancode.web.mappers")
-@AutoConfigureRestDocs
+@AutoConfigureRestDocs(uriScheme="https", uriHost="dev.samcancode.com", uriPort=80)
 @ExtendWith(RestDocumentationExtension.class)
 class BeerControllerTest {
 
