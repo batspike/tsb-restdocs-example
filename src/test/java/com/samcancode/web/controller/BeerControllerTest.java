@@ -61,7 +61,7 @@ class BeerControllerTest {
         			   )
                 .andExpect(status().isOk())
                 .andDo( 
-                		document("v1/beer",  //document endpoint identifier
+                		document("v1/beer-get",  //document endpoint identifier must be unique
                 				  pathParameters( //document named param
                 						  		  parameterWithName("beerId").description("UUID of desired beer to get.") 
                 						  		),
@@ -95,7 +95,7 @@ class BeerControllerTest {
                 .content(beerDtoJson))
                 .andExpect(status().isCreated())
                 .andDo( 
-                		document("v1/beer",  //document endpoint identifier
+                		document("v1/beer-new",  //document endpoint identifier
                 				  requestFields( //document request fields
 		    						  			fields.withPath("id").ignored(), //ignored as it is not required
 		    						  			fields.withPath("version").ignored(), 
