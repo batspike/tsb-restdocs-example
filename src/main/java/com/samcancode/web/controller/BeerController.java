@@ -29,8 +29,9 @@ public class BeerController {
 
     @GetMapping("/{beerId}")
     public ResponseEntity<BeerDto> getBeerById(@PathVariable("beerId") UUID beerId){
-
-        return new ResponseEntity<>(beerMapper.BeerToBeerDto(beerRepository.findById(beerId).get()), HttpStatus.OK);
+    	BeerDto returnDto = beerMapper.BeerToBeerDto(beerRepository.findById(beerId).get());
+    	returnDto.setQuantityOnHand(333);
+        return new ResponseEntity<>(returnDto, HttpStatus.OK);
     }
 
     @SuppressWarnings("rawtypes")

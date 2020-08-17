@@ -12,6 +12,9 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 
 import java.math.BigDecimal;
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -49,13 +52,30 @@ class BeerControllerTest {
 
     @MockBean
     BeerRepository beerRepository;
-
+    
     @Test
     void getBeerById() throws Exception {
-        given(beerRepository.findById(any())).willReturn(Optional.of(Beer.builder().build()));
+    	//Given
+    	Beer validBeer = Beer.builder()
+							.id(UUID.randomUUID())
+							.beerName("Beer1")
+							.beerStyle("PALE_ALE")
+							.upc(123456789012L)
+							.version(1L)
+							.price(new BigDecimal("12.99"))
+							.minOnHand(200)
+							.createdDate(Timestamp.valueOf(LocalDateTime.now()))
+							.lastModifiedDate(Timestamp.valueOf(LocalDateTime.now()))
+							.quantityToBrew(400)
+							.build();
 
+        given(beerRepository.findById(any())).willReturn(Optional.of(validBeer));
+        
+        ConstrainedFields fields = new ConstrainedFields(BeerDto.class);
+
+        //When-Then
         mockMvc.perform(
-        				 get( "/api/v1/beer/{beerId}", UUID.randomUUID().toString() )
+        				 get( "/api/v1/beer/{beerId}", validBeer.getId().toString() )
         				 	.param("iscold", "yes") //this is a request query param which is not needed for this endpoint; shown here for demo.
         				 	.accept(MediaType.APPLICATION_JSON)
         			   )
@@ -69,15 +89,15 @@ class BeerControllerTest {
                 						  			 parameterWithName("iscold").description("Is Beer Cold Query param") 
                 						  		   ), 
                 				  responseFields( //document response field
-                						  			fieldWithPath("id").description("Id of Beer"), 
-                						  			fieldWithPath("version").description("Version number"), 
-                						  			fieldWithPath("createdDate").description("Date Created"), 
-                						  			fieldWithPath("lastModifiedDate").description("Date Updated"), 
-                						  			fieldWithPath("beerName").description("Beer Name"), 
-                						  			fieldWithPath("beerStyle").description("Beer Style"), 
-                						  			fieldWithPath("upc").description("UPC of Beer"), 
-                						  			fieldWithPath("price").description("Price"), 
-                						  			fieldWithPath("quantityOnHand").description("Quantity On Hand") 
+		                						  fields.withPath("id").description("Id of Beer").type(UUID.class), 
+		                						  fields.withPath("version").description("Version number"), 
+		                						  fields.withPath("createdDate").description("Date Created").type(OffsetDateTime.class), 
+		                						  fields.withPath("lastModifiedDate").description("Date Updated").type(OffsetDateTime.class), 
+		                						  fields.withPath("beerName").description("Beer Name"), 
+		                						  fields.withPath("beerStyle").description("Beer Style"), 
+		                						  fields.withPath("upc").description("UPC of Beer"), 
+		                						  fields.withPath("price").description("Price"), 
+		                						  fields.withPath("quantityOnHand").description("Quantity On Hand") 
                 						        )  
                 	            )
                 	  );
